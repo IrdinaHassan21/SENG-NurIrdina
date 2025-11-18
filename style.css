@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    
+
     background-image: url("garden.jpg");
     background-size: cover;
     background-position: center;
@@ -16,4 +16,19 @@ body {
 canvas {
     border: 3px solid #333;
     background: #c5e3a8;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: white;   /* WHITE BOX */
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.sidebar h2, 
+.sidebar h3 {
+  margin-top: 0;
 }
