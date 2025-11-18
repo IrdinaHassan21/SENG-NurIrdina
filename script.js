@@ -88,6 +88,7 @@ function checkCollisions() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Update sidebar time
     timeText.textContent = timeLeft;
 
     // Remove cats older than 5 seconds
@@ -99,10 +100,10 @@ function draw() {
         ctx.drawImage(c.bad ? badCatImg : catImg, c.x, c.y, c.width, c.height);
     });
 
-    // Player
+    // Draw player
     ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
 
-    // UI
+    // Draw UI
     ctx.fillStyle = "black";
     ctx.font = "20px Arial";
     ctx.fillText(`Score: ${score}`, 20, 30);
@@ -120,15 +121,12 @@ function draw() {
         ctx.font = "32px Arial";
         ctx.fillText(`Final Score: ${score}`, 300, 290);
 
+        // Update high score
         if (score > highScore) {
             highScore = score;
             highScoreText.textContent = highScore;
         }
-
-        return;
     }
-
-    requestAnimationFrame(gameLoop);
 }
 
 // Main game loop
@@ -139,12 +137,14 @@ function gameLoop() {
         checkCollisions();
     }
     draw();
+    requestAnimationFrame(gameLoop); // always keep loop running
 }
 
 // --- Timer & Spawn intervals ---
 let timerInterval;
 let spawnInterval;
 
+// --- Start / Restart logic ---
 function restartGame() {
     // Clear old intervals
     clearInterval(timerInterval);
@@ -169,21 +169,16 @@ function restartGame() {
     // Spawn cats
     spawnInterval = setInterval(spawnCat, 1000);
 
-    // Reset gameRunning to allow loop restart
-    gameRunning = false;
+    // Focus canvas
+    canvas.focus();
+}
 
-    // Start game loop
+// Start button
+startBtn.addEventListener("click", () => {
     if (!gameRunning) {
         gameRunning = true;
         gameLoop();
     }
-
-    canvas.focus();
-}
-
-
-// Start button
-startBtn.addEventListener("click", () => {
     restartGame();
 });
 
