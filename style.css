@@ -9,13 +9,23 @@ body {
     background-repeat: no-repeat;
 
     display: flex;
-    justify-content: center;
-    padding-top: 20px;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+}
+
+#gameTitle {
+    font-family: 'Caveat', cursive; /* Stardew-like whimsical font */
+    font-size: 72px; /* bigger */
+    text-align: center;
+    color: #FF8C00;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+    margin-bottom: 30px; /* space between title and canvas */
 }
 
 .container {
     display: flex;
-    gap: 20px; /* space between canvas and sidebar */
+    gap: 20px;
     justify-content: center;
     align-items: flex-start;
 }
@@ -49,20 +59,4 @@ canvas {
 .sidebar h2, 
 .sidebar h3 {
   margin-top: 0;
-}
-
-h1 {
-    font-family: 'Comic Sans MS', cursive, sans-serif; 
-    font-size: 48px; 
-    color: #ff6f61; 
-    text-align: center;
-    text-shadow: 2px 2px 4px #000; 
-    
-    /* Position at the bottom */
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0; 
-    z-index: 1000;
 }
