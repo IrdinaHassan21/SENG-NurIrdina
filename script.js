@@ -67,15 +67,18 @@ function updatePlayer() {
 }
 
 // Collision detection
+
 function checkCollisions() {
+    let padding = 10; // shrink collision area
+
     for (let i = cats.length - 1; i >= 0; i--) {
         let c = cats[i];
 
         if (
-            player.x < c.x + c.width &&
-            player.x + player.width > c.x &&
-            player.y < c.y + c.height &&
-            player.y + player.height > c.y
+            player.x + padding < c.x + c.width - padding &&
+            player.x + player.width - padding > c.x + padding &&
+            player.y + padding < c.y + c.height - padding &&
+            player.y + player.height - padding > c.y + padding
         ) {
             if (c.bad) score -= 1;
             else score += 1;
