@@ -1,14 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Cat Collector</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Cat Collector</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<canvas id="gameCanvas" width="800" height="500"></canvas>
-<script src="script.js"></script>
+  <h1>Cat Collector</h1>
 
+  <div class="container">
+
+    <!-- Game Area -->
+    <div class="game-area">
+      <canvas id="gameCanvas" width="800" height="500" tabindex="0"></canvas>
+    </div>
+
+    <!-- Sidebar Instructions + Buttons -->
+    <div class="sidebar">
+      <button id="startBtn">Start Game</button>
+      <button id="restartBtn">Restart Game</button>
+
+      <h2>How to Play</h2>
+      <p>• Use arrow keys to move</p>
+      <p>• Collect cats (+1 score)</p>
+      <p>• Collect bad cats (-1 score)</p>
+      <p>• Try to beat your high score!</p>
+
+      <h3>Your Score: <span id="score">0</span></h3>
+      <h3>High Score: <span id="highScore">0</span></h3>
+      <h3>Time Left: <span id="timeLeft">30</span></h3>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

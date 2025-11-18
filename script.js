@@ -2,6 +2,13 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// Buttons & score
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const scoreText = document.getElementById("score");
+const highScoreText = document.getElementById("highScore");
+const timeText = document.getElementById("timeLeft");
+
 // Load images
 const playerImg = new Image();
 playerImg.src = "player.png";
@@ -13,18 +20,13 @@ const badCatImg = new Image();
 badCatImg.src = "badcat.png";
 
 // Player
-let player = {
-    x: 400,
-    y: 250,
-    width: 50,
-    height: 50,
-    speed: 4
-};
+let player = { x: 400, y: 250, width: 50, height: 50, speed: 4 };
 
 // Game data
 let cats = [];
 let score = 0;
-let timeLeft = 30;
+let highScore = 0;
+let timeLeft = 60;
 let gameOver = false;
 
 // Keyboard input
@@ -41,16 +43,10 @@ function spawnCat() {
         y: Math.random() * (canvas.height - 60),
         width: 48,
         height: 48,
-        bad: Math.random() < 0.25
+        bad: Math.random() < 0.25,
+        spawnTime: Date.now() // for disappearing cats
     });
 }
-setInterval(spawnCat, 1000);
-
-// Timer
-setInterval(() => {
-    if (!gameOver && timeLeft > 0) timeLeft--;
-    if (timeLeft <= 0) gameOver = true;
-}, 1000);
 
 // Player movement
 function updatePlayer() {
@@ -68,25 +64,7 @@ function updatePlayer() {
 
 // Collision detection
 function checkCollisions() {
-    for (let i = cats.length - 1; i >= 0; i--) {
-        let c = cats[i];
-
-        if (
-            player.x < c.x + c.width &&
-            player.x + player.width > c.x &&
-            player.y < c.y + c.height &&
-            player.y + player.height > c.y
-        ) {
-            if (c.bad) score -= 1;
-            else score += 1;
-
-            cats.splice(i, 1);
-        }
-    }
-}
-
-function checkCollisions() {
-    let padding = 10; // shrink collision area
+    let padding = 10;
 
     for (let i = cats.length - 1; i >= 0; i--) {
         let c = cats[i];
@@ -101,27 +79,22 @@ function checkCollisions() {
             else score += 1;
 
             cats.splice(i, 1);
+            scoreText.textContent = score;
         }
     }
-}
-
-// Restart game
-function restartGame() {
-    player.x = 400;
-    player.y = 250;
-    score = 0;
-    timeLeft = 30;
-    cats = [];
-    gameOver = false;
-
-    gameLoop();
 }
 
 // Draw everything
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Cats
+    timeText.textContent = timeLeft;
+
+    // Remove cats older than 5 seconds
+    const now = Date.now();
+    cats = cats.filter(c => now - c.spawnTime < 5000);
+
+    // Draw cats
     cats.forEach(c => {
         ctx.drawImage(c.bad ? badCatImg : catImg, c.x, c.y, c.width, c.height);
     });
@@ -147,46 +120,74 @@ function draw() {
         ctx.font = "32px Arial";
         ctx.fillText(`Final Score: ${score}`, 300, 290);
 
-        // Show restart button
-        showRestartButton();
+        if (score > highScore) {
+            highScore = score;
+            highScoreText.textContent = highScore;
+        }
+
         return;
     }
 
     requestAnimationFrame(gameLoop);
 }
 
-// Create restart button (only once)
-let restartButtonCreated = false;
-
-function showRestartButton() {
-    if (restartButtonCreated) return;
-
-    const btn = document.createElement("button");
-    btn.innerText = "Restart Game";
-    btn.style.position = "absolute";
-    btn.style.top = "550px";
-    btn.style.left = "50%";
-    btn.style.transform = "translateX(-50%)";
-    btn.style.padding = "12px 25px";
-    btn.style.fontSize = "18px";
-    btn.style.borderRadius = "10px";
-    btn.style.cursor = "pointer";
-
-    btn.onclick = () => {
-        btn.remove();
-        restartButtonCreated = false;
-        restartGame();
-    };
-
-    document.body.appendChild(btn);
-    restartButtonCreated = true;
-}
-
 // Main game loop
+let gameRunning = false;
 function gameLoop() {
-    updatePlayer();
-    checkCollisions();
+    if (!gameOver) {
+        updatePlayer();
+        checkCollisions();
+    }
     draw();
 }
 
-gameLoop();
+// --- Timer & Spawn intervals ---
+let timerInterval;
+let spawnInterval;
+
+function restartGame() {
+    // Clear old intervals
+    clearInterval(timerInterval);
+    clearInterval(spawnInterval);
+
+    // Reset player & game data
+    player.x = 400;
+    player.y = 250;
+    score = 0;
+    timeLeft = 60;
+    cats = [];
+    gameOver = false;
+    scoreText.textContent = score;
+    timeText.textContent = timeLeft;
+
+    // Start timer
+    timerInterval = setInterval(() => {
+        if (!gameOver && timeLeft > 0) timeLeft--;
+        if (timeLeft <= 0) gameOver = true;
+    }, 1000);
+
+    // Spawn cats
+    spawnInterval = setInterval(spawnCat, 1000);
+
+    // Reset gameRunning to allow loop restart
+    gameRunning = false;
+
+    // Start game loop
+    if (!gameRunning) {
+        gameRunning = true;
+        gameLoop();
+    }
+
+    canvas.focus();
+}
+
+
+// Start button
+startBtn.addEventListener("click", () => {
+    restartGame();
+});
+
+// Restart button
+restartBtn.addEventListener("click", () => {
+    restartGame();
+});

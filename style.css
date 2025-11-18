@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    
+
     background-image: url("garden.jpg");
     background-size: cover;
     background-position: center;
@@ -13,7 +13,56 @@ body {
     padding-top: 20px;
 }
 
+.container {
+    display: flex;
+    gap: 20px; /* space between canvas and sidebar */
+    justify-content: center;
+    align-items: flex-start;
+}
+
 canvas {
     border: 3px solid #333;
     background: #c5e3a8;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* Buttons in sidebar */
+.sidebar button {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sidebar h2, 
+.sidebar h3 {
+  margin-top: 0;
+}
+
+h1 {
+    font-family: 'Comic Sans MS', cursive, sans-serif; 
+    font-size: 48px; 
+    color: #ff6f61; 
+    text-align: center;
+    text-shadow: 2px 2px 4px #000; 
+    
+    /* Position at the bottom */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0; 
+    z-index: 1000;
 }
