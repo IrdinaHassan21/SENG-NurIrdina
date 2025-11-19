@@ -11,82 +11,86 @@ const timeText = document.getElementById("timeLeft");
 
 // Load images
 const playerImg = new Image();
-playerImg.src = "player.png";
+playerImg.src = "assets/player.png";
 
 const catImg = new Image();
-catImg.src = "cat.png";
+catImg.src = "assets/cat.png";
 
 const badCatImg = new Image();
-badCatImg.src = "badcat.png";
+badCatImg.src = "assets/badcat.png";
 
-// Player
+// Player object
 let player = { x: 400, y: 250, width: 50, height: 50, speed: 4 };
 
 // Game data
-let cats = [];
-let score = 0;
+let cats = []; // array to store all cats currently on screen
+let score = 0; // current score
 let highScore = 0;
 let timeLeft = 60;
-let gameOver = false;
+let gameOver = false; // check if the game has ended
 
 // Keyboard input
 let keys = {};
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
+document.addEventListener("keydown", e => keys[e.key] = true); //key pressed
+document.addEventListener("keyup", e => keys[e.key] = false); // key released
 
-// Spawn cats
+// Spawn cats function
 function spawnCat() {
-    if (gameOver) return;
+    if (gameOver) return; //dont spawn cats if the game is over
 
     cats.push({
-        x: Math.random() * (canvas.width - 60),
-        y: Math.random() * (canvas.height - 60),
-        width: 48,
-        height: 48,
-        bad: Math.random() < 0.25,
-        spawnTime: Date.now() // for disappearing cats
+        x: Math.random() * (canvas.width - 60), // random horizontal position
+        y: Math.random() * (canvas.height - 60), //random vertical position
+        width: 48, // cat width
+        height: 48, // cat height
+        bad: Math.random() < 0.25, // set 25% chance that the cat is "bad"
+        spawnTime: Date.now() // for tracking how long the cat has been on screen
     });
 }
 
 // Player movement
 function updatePlayer() {
+    // Move player based on keys pressed
     if (keys["ArrowUp"] || keys["w"]) player.y -= player.speed;
     if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
     if (keys["ArrowLeft"] || keys["a"]) player.x -= player.speed;
     if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
 
     // Stay inside canvas
-    if (player.x < 0) player.x = 0;
-    if (player.y < 0) player.y = 0;
+    if (player.x < 0) player.x = 0; // left boundary
+    if (player.y < 0) player.y = 0; // top boundary
     if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
     if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
 }
 
 // Collision detection
 function checkCollisions() {
-    let padding = 10;
+    let padding = 10; //shrink the collision box so its not too sensitive
 
+    // loop through cats array from end to start to safely remove caught cats
     for (let i = cats.length - 1; i >= 0; i--) {
         let c = cats[i];
-
+        
+        // check if player's rectangle overlaps cat's rectangle (with padding)
         if (
             player.x + padding < c.x + c.width - padding &&
             player.x + player.width - padding > c.x + padding &&
             player.y + padding < c.y + c.height - padding &&
             player.y + player.height - padding > c.y + padding
         ) {
+            // to update the score
             if (c.bad) score -= 1;
             else score += 1;
 
-            cats.splice(i, 1);
-            scoreText.textContent = score;
+            cats.splice(i, 1); // to remove tje cat from array after collision
+            scoreText.textContent = score; // update the score in HTML
         }
     }
 }
 
 // Draw everything
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // clear the canvas before drawing
 
     // Update sidebar time
     timeText.textContent = timeLeft;
@@ -130,27 +134,27 @@ function draw() {
 }
 
 // Main game loop
-let gameRunning = false;
+let gameRunning = false; // to make sure the game loop only start once
 function gameLoop() {
     if (!gameOver) {
-        updatePlayer();
-        checkCollisions();
+        updatePlayer();  // move the player
+        checkCollisions(); // check if player collected any cats
     }
-    draw();
-    requestAnimationFrame(gameLoop); // always keep loop running
+    draw(); // redraw everything
+    requestAnimationFrame(gameLoop); // always keep the loop running
 }
 
 // --- Timer & Spawn intervals ---
-let timerInterval;
+let timerInterval;   
 let spawnInterval;
 
 // --- Start / Restart logic ---
 function restartGame() {
-    // Clear old intervals
+    // Clear old intervals to prevent multiple timers
     clearInterval(timerInterval);
     clearInterval(spawnInterval);
 
-    // Reset player & game data
+    // Reset player position & game data
     player.x = 400;
     player.y = 250;
     score = 0;
@@ -166,10 +170,10 @@ function restartGame() {
         if (timeLeft <= 0) gameOver = true;
     }, 1000);
 
-    // Spawn cats
+    // Spawn cats every second
     spawnInterval = setInterval(spawnCat, 1000);
 
-    // Focus canvas
+    // Focus canvas so payer can use keyboard controls immediately
     canvas.focus();
 }
 
@@ -177,9 +181,9 @@ function restartGame() {
 startBtn.addEventListener("click", () => {
     if (!gameRunning) {
         gameRunning = true;
-        gameLoop();
+        gameLoop(); //start the main loop
     }
-    restartGame();
+    restartGame(); // reset the game when starting
 });
 
 // Restart button
