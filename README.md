@@ -49,7 +49,7 @@ This project was created as part of an assignment to demonstrate skills with the
 
 ```bash
 # Example: cloning the repository
-git clone https://github.com/yourusername/cat-collector.git](https://github.com/IrdinaHassan21/SENG-NurIrdina.git
+git clone https://github.com/IrdinaHassan21/SENG-NurIrdina.git
 cd cat-collector
 # Open in browser
 start index.html  # Windows
