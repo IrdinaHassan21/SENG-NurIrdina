@@ -289,3 +289,107 @@ startBtn.addEventListener("click", () => {
 });
 
 restartBtn.addEventListener("click", restartGame);
+
+const API_URL = "https://localhost:5001/api"; // adjust if your backend URL differs
+let token = ""; // JWT token after login
+
+// ---------------------- AUTH FUNCTIONS ----------------------
+
+// Register a new player
+async function registerPlayer(name, password) {
+    const res = await fetch(`${API_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password })
+    });
+    const data = await res.json();
+    console.log("Register:", data);
+    return data;
+}
+
+// Login a player
+async function loginPlayer(name, password) {
+    const res = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password })
+    });
+    const data = await res.json();
+    if (data.token) {
+        token = data.token; // save JWT token
+        console.log("Logged in, token:", token);
+    } else {
+        console.error("Login failed:", data);
+    }
+    return data;
+}
+
+// ---------------------- PLAYER FUNCTIONS ----------------------
+
+// Get all players
+async function getPlayers() {
+    const res = await fetch(`${API_URL}/players`, {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+    const players = await res.json();
+    console.log("Players:", players);
+    return players;
+}
+
+// Get single player by ID
+async function getPlayerById(id) {
+    const res = await fetch(`${API_URL}/players/${id}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+    const player = await res.json();
+    return player;
+}
+
+// Create a new player (if you want manual creation from frontend)
+async function createPlayer(playerObj) {
+    const res = await fetch(`${API_URL}/players`, {
+        method: "POST",
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(playerObj)
+    });
+    const player = await res.json();
+    return player;
+}
+
+// Update player score (upsert style)
+async function updatePlayerScore(id, goodCats, badCats, fatCats) {
+    const res = await fetch(`${API_URL}/players/${id}`, {
+        method: "PUT",
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ goodCats, badCats, fatCats })
+    });
+    const data = await res.json();
+    return data;
+}
+
+// ---------------------- EXAMPLE USAGE ----------------------
+
+// Example: register and login
+async function testFlow() {
+    await registerPlayer("NurIrdina", "Password123");
+    await loginPlayer("NurIrdina", "Password123");
+
+    // Fetch all players
+    const players = await getPlayers();
+    console.log(players);
+
+    // Update score for first player (example)
+    if (players.length > 0) {
+        const updated = await updatePlayerScore(players[0].id, 5, 2, 1);
+        console.log("Score updated:", updated);
+    }
+}
+
+// Call the test flow
+testFlow();
